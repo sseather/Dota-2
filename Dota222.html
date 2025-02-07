@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ты пойдёшь со мной играть в Dota 2?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Arial", sans-serif;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url("https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/backgrounds/hero_carousel_bg.jpg") no-repeat center center/cover;
+            color: white;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+        h1 {
+            font-size: 35px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 15px rgba(255, 215, 0, 1);
+            animation: fadeIn 1s ease-in-out;
+        }
+        .buttons {
+            display: flex;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+        .btn {
+            padding: 15px 40px;
+            font-size: 22px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border-radius: 10px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+        }
+        .btn-yes {
+            background: linear-gradient(45deg, #ffcc00, #ff5500);
+            color: black;
+            transform: scale(1);
+        }
+        .btn-no {
+            background: linear-gradient(45deg, #111, #000);
+            color: white;
+            transform: scale(1);
+        }
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+        .hidden {
+            display: none;
+        }
+        .gif-container {
+            margin-top: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .gif-container img {
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            font-size: 50px;
+            z-index: 999;
+            transition: all 0.6s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .victory {
+            background: url("https://cdn.cloudflare.steamstatic.com/apps/dota2/images/blogfiles/ti10_victory_hero.jpg") no-repeat center center/cover;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            color: white;
+            font-size: 40px;
+            text-shadow: 2px 2px 20px rgba(255, 215, 0, 1);
+            animation: fadeIn 2s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="question">Ты пойдёшь со мной играть в Dota 2?</h1>
+    
+    <div class="buttons">
+        <button class="btn btn-yes" id="yes-btn" onclick="agree()">Да</button>
+        <button class="btn btn-no" id="no-btn" onclick="decline()">Нет</button>
+    </div>
+
+    <div class="gif-container hidden" id="gif-container">
+        <h2 id="response-text">Ура! Я знал, что ты согласишься!</h2>
+        <img src="https://media.tenor.com/vm14hvPpEpMAAAAM/shadow-fiend-dota2.gif" alt="Радостный кот">
+    </div>
+
+    <audio id="click-sound" src="https://cdn.cloudflare.steamstatic.com/apps/dota2/sounds/ui2/menu_select.wav"></audio>
+    <audio id="victory-sound" src="https://cdn.cloudflare.steamstatic.com/apps/dota2/sounds/ui2/valve_win.wav"></audio>
+
+    <script>
+        let noClicks = 0;
+        const noButton = document.getElementById('no-btn');
+        const yesButton = document.getElementById('yes-btn');
+        const question = document.getElementById('question');
+        const gifContainer = document.getElementById('gif-container');
+        const clickSound = document.getElementById('click-sound');
+        const victorySound = document.getElementById('victory-sound');
+
+        function agree() {
+            question.classList.add('hidden');
+            document.querySelector('.buttons').classList.add('hidden');
+            gifContainer.classList.remove('hidden');
+
+            setTimeout(() => {
+                document.body.innerHTML = `
+                    <div class="victory">
+                        <h1>ПОБЕДА! 🎉</h1>
+                        <p>Ты настоящий чемпион!</p>
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/blogfiles/ti10_victory_hero.jpg" width="600">
+                    </div>`;
+                victorySound.play();
+            }, 2000);
+        }
+
+        function decline() {
+            clickSound.play();
+            noClicks++;
+
+            if (noClicks === 1) {
+                noButton.textContent = "Уверена?";
+                noButton.style.transform = "scale(0.9)";
+                yesButton.style.transform = "scale(1.1)";
+            } else if (noClicks === 2) {
+                noButton.textContent = "Я обижусь...";
+                noButton.style.transform = "scale(0.8)";
+                yesButton.style.transform = "scale(1.2)";
+            } else if (noClicks === 3) {
+                noButton.textContent = "Ты не хочешь выиграть Aegis?";
+                noButton.style.transform = "scale(0.6)";
+                yesButton.style.transform = "scale(1.4)";
+            } else if (noClicks === 4) {
+                noButton.textContent = "Ты подставляешь команду!";
+                noButton.style.transform = "scale(0.4)";
+                yesButton.style.transform = "scale(1.6)";
+            } else if (noClicks === 5) {
+                noButton.textContent = "Габен в слезах...";
+                noButton.style.transform = "scale(0.2)";
+                yesButton.style.transform = "scale(1.8)";
+            } else {
+                noButton.classList.add('hidden');
+                yesButton.classList.add('fullscreen');
+                yesButton.textContent = "ДА!";
+            }
+        }
+    </script>
+
+</body>
+</html>
